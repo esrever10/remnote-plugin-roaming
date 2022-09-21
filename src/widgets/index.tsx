@@ -7,16 +7,17 @@ async function onActivate(plugin: ReactRNPlugin) {
     "roaming_widget",
     WidgetLocation.SidebarEnd,
     {
-      dimensions: { height: "auto", width: "280px" },
+      dimensions: { height: "auto", width: "100%" },
     }
   );
+
   await plugin.app.registerWidget(
     "debug_widget",
     WidgetLocation.RightSidebar,
     {
       dimensions: { height: "auto", width: "100%" },
     }
-  );  
+  );
 
   await plugin.settings.registerStringSetting({
     id: "level_custom",

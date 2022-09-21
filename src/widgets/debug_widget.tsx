@@ -1,19 +1,11 @@
 import React from "react";
 import {
   AppEvents,
-  LoadingSpinner,
-  RemHierarchyEditorTree,
-  RemRichTextEditor,
   RemViewer,
   renderWidget,
-  RichTextElementTextInterface,
   RichTextInterface,
   useAPIEventListener,
-  useLocalStorageState,
   usePlugin,
-  useRunAsync,
-  useSyncedStorageState,
-  WidgetLocation,
 } from "@remnote/plugin-sdk";
 import * as Re from "remeda"
 

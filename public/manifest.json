@@ -1,10 +1,10 @@
 {
   "manifestVersion": 1,
-  "id": "plugin_template",
-  "name": "Plugin Template",
-  "author": "remnote",
+  "id": "esrever10_roaming",
+  "name": "Roaming",
+  "author": "esrever10",
   "repoUrl": "https://github.com/esrever10/remnote-plugin-roaming",
-  "enableOnMobile": true,
+  "enableOnMobile": false,
   "version": {
     "major": 0,
     "minor": 0,
