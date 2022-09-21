@@ -3,7 +3,8 @@
   "id": "plugin_template",
   "name": "Plugin Template",
   "author": "remnote",
-  "repoUrl": "",
+  "repoUrl": "https://github.com/esrever10/remnote-plugin-roaming",
+  "enableOnMobile": true,
   "version": {
     "major": 0,
     "minor": 0,
