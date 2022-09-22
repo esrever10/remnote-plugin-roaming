@@ -52,6 +52,7 @@ function DebugWidget() {
         info?.set("parent-isPowerupSlot",await (await rem.getParentRem())?.isPowerupSlot())
         info?.set("hasPowerup:f", await rem?.hasPowerup('f'))
         info?.set("hasPowerup:z", await rem?.hasPowerup('z'))
+        info?.set("hasPowerup:b", await rem?.hasPowerup('b'))
         info?.set("parent-hasPowerup:f", await (await rem?.getParentRem())?.hasPowerup('f'))
         info?.set("parent-hasPowerup:z", await (await rem?.getParentRem())?.hasPowerup('z'))
         info?.set("parent-parent-hasPowerup:z", await (await (await rem.getParentRem())?.getParentRem())?.hasPowerup('f'))

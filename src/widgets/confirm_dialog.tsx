@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 export default function ConfirmDialog(props: any) {
-  const { open, onClose, title, children, onConfirm } = props;
+  const { open, onClose, title, children, onConfirm, ref } = props;
   if (!open) {
     return <></>;
   }

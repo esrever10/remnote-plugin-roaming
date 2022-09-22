@@ -24,12 +24,12 @@ async function onActivate(plugin: ReactRNPlugin) {
     title: "Custom level.",
     defaultValue: 
 `0::NoName
-100::Underdog
-500::Rookie
-1000::SmartKid
-2000::Professional
-4000::BountyHunter
-8000::SmartAss
+1::Underdog
+10::Rookie
+100::SmartKid
+1000::Professional
+2000::BountyHunter
+4000::SmartAss
 10000::Hurricane
 12000::SuperStar
 14000::Jack
