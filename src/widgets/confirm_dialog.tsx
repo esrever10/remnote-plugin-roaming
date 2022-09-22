@@ -30,7 +30,7 @@ export default function ConfirmDialog(props: any) {
               ></path>
             </svg>
             <h3 className={clsx("mb-5 text-lg font-normal text-gray-500", props.dark && "dark:text-gray-400")}>
-              Are you sure you want to reset your roaming statistics data?
+              Are you sure to reset roaming statistics data?
             </h3>
             <button
               onClick={onConfirm}
