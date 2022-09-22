@@ -7,6 +7,7 @@ One click to get a random rem. Gamification experience. Roam freely in your rems
 - Click "Roam" button to get a random rem.
 - Click "Block" button means current rem do not want to encounter again.
 - Gamification, roam to get experience value, and then level up!
+- Custom config level and title.
 - Rich data records, know your rems total, how many more experience to level up, and so on.
 - Support Darkmode
 
