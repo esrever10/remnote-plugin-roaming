@@ -12,30 +12,32 @@ import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import { animated, useSpring, useSprings } from 'react-spring';
 import * as Re from 'remeda';
-import { useHeight } from '../libs/useHeight';
 import { AnimatedNumbers } from './animated_number';
 import ConfirmDialog from './confirm_dialog';
 
 const getRandomElement = (arr: any[]) =>
   arr.length ? arr[Math.floor(Math.random() * arr.length)] : undefined;
 
-  const MysteriousText = ({ children, ...props }) => {
-    const [animations, api] = useSprings(children.length, i => ({ opacity: 1, delay: Math.random() * 350}));
-    const content = useRef(children);
+const MysteriousText = ({ children, ...props }) => {
+  const [animations, api] = useSprings(children.length, (i) => ({
+    opacity: 1,
+    delay: Math.random() * 350,
+  }));
+  const content = useRef(children);
 
-    useEffect(()=> {
-      if (content.current !== children) {
-        api(i => ({opacity: 1, from: { opacity: 0 }, delay: Math.random() * 350}));
-        content.current = children;
-      }
-    })
+  useEffect(() => {
+    if (content.current !== children) {
+      api((i) => ({ opacity: 1, from: { opacity: 0 }, delay: Math.random() * 350 }));
+      content.current = children;
+    }
+  });
 
-    return children.split("").map((item: string, index: number) => (
-      <animated.span key={index} style={animations[index]} {...props}>
-        {item}
-      </animated.span>
-    ));
-  };
+  return children.split('').map((item: string, index: number) => (
+    <animated.span key={index} style={animations[index]} {...props}>
+      {item}
+    </animated.span>
+  ));
+};
 
 export const RoamingWidget = () => {
   console.log(document.body.classList.contains('dark'));
@@ -212,8 +214,6 @@ export const RoamingWidget = () => {
     };
 
     const got: Rem = await drawaCard();
-    console.log(got.text);
-
     if (got) {
       await plugin.window.openRem(got);
       setCurrentRemId(got._id);
@@ -244,18 +244,18 @@ export const RoamingWidget = () => {
     from: { opacity: 0, height: 0 },
     to: {
       opacity: dialogHidden ? 0 : 1,
-      height: dialogHidden ? 0 : 300
-    }
+      height: dialogHidden ? 0 : 360,
+    },
   });
 
   return (
     <div
       className={clsx(
-        'rounded-md grid grid-flow-row auto-rows-auto max-h-300 border-double border-indigo-400',
+        'rounded-md grid grid-flow-row auto-rows-auto h-800 border-double border-indigo-400',
         dark && 'dark:border-indigo-300'
       )}
     >
-      <animated.div style={{ ...slideInStyles, overflow: "hidden" }}>
+      <animated.div style={{ ...slideInStyles, overflow: 'hidden' }}>
         <ConfirmDialog
           onConfirm={reset}
           onClose={close}
@@ -263,7 +263,7 @@ export const RoamingWidget = () => {
           open={!dialogHidden}
         ></ConfirmDialog>
       </animated.div>
-      
+
       <div className="flex justify-between">
         <div className="flex-none">
           <button onClick={showConfirm}>
@@ -326,11 +326,7 @@ export const RoamingWidget = () => {
         <div className="w-8"></div>
       </div>
       <div className="flex justify-center self-center">
-        <AnimatedNumbers
-            value={roamCount}
-            fontSize={60}
-            dark={dark}
-          />
+        <AnimatedNumbers value={roamCount} fontSize={60} dark={dark} />
       </div>
       <div className="flex justify-around items-center">
         <button
@@ -353,7 +349,12 @@ export const RoamingWidget = () => {
         </button>
         <div className="basis-1/2 flex flex-col items-center self-center justify-center">
           <p className={clsx('font-mono text-1xl text-indigo-700', dark && 'dark:text-indigo-300')}>
-            <MysteriousText open={levelupNow} className={clsx('font-mono text-1xl text-indigo-700', dark && 'dark:text-indigo-300')}>{title}</MysteriousText>
+            <MysteriousText
+              open={levelupNow}
+              className={clsx('font-mono text-1xl text-indigo-700', dark && 'dark:text-indigo-300')}
+            >
+              {title}
+            </MysteriousText>
           </p>
         </div>
         <div>
