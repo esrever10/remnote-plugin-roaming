@@ -11,13 +11,13 @@ async function onActivate(plugin: ReactRNPlugin) {
     }
   );
 
-  await plugin.app.registerWidget(
-    "debug_widget",
-    WidgetLocation.RightSidebar,
-    {
-      dimensions: { height: "auto", width: "100%" },
-    }
-  );
+  // await plugin.app.registerWidget(
+  //   "debug_widget",
+  //   WidgetLocation.RightSidebar,
+  //   {
+  //     dimensions: { height: "auto", width: "100%" },
+  //   }
+  // );
 
   await plugin.settings.registerStringSetting({
     id: "level_custom",
