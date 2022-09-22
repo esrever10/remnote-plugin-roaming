@@ -327,7 +327,7 @@ export const RoamingWidget = () => {
       </div>
       <div className="flex justify-center self-center">
         <AnimatedNumbers
-            value={666}
+            value={roamCount}
             fontSize={60}
             dark={dark}
           />
