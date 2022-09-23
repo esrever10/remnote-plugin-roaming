@@ -12,6 +12,12 @@ One click to get a random rem. Gamification experience. Roam freely in your rems
 - Rich data records, know your rems total, how many more experience to level up, and so on.
 - Support Darkmode
 
+## Note
+
+If you have too many rems, when you first click Roam, that will be slow, But after that, everything will be fast, 
+because I cache all the rems ids, and if you have new rems you want to add to the roaming pool, 
+you can update the cache by clicking the button in the upper right corner  
+
 ## Showcase
 
 ![](https://raw.githubusercontent.com/esrever10/remnote-plugin-roaming/main/images/explain.png)
