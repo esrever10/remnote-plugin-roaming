@@ -7,13 +7,13 @@
   "enableOnMobile": false,
   "version": {
     "major": 0,
-    "minor": 0,
-    "patch": 9
+    "minor": 1,
+    "patch": 0
   },
   "minimumRemNoteVersion": {
     "major": 0,
-    "minor": 0,
-    "patch": 9
+    "minor": 1,
+    "patch": 0
   },
   "description": "One click to get a random rem. Gamification experience. Roam freely in your rems.",
   "requestNative": false,

@@ -1,4 +1,3 @@
-import { FluidValue } from '@react-spring/shared';
 import {
   usePlugin,
   renderWidget,
@@ -12,7 +11,7 @@ import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import { animated, useSpring, useSprings } from 'react-spring';
 import * as Re from 'remeda';
-import { AnimatedNumbers } from './animated_number';
+import { SAnimatedNumbers } from './animated_number';
 import ConfirmDialog from './confirm_dialog';
 
 const getRandomElement = (arr: any[]) =>
@@ -26,7 +25,7 @@ const MysteriousText = ({ children, ...props }) => {
   const content = useRef(children);
 
   useEffect(() => {
-    if (content.current !== children) {
+    if ((props.open && !props.check) || (content.current !== children)) {
       api((i) => ({ opacity: 1, from: { opacity: 0 }, delay: Math.random() * 350 }));
       content.current = children;
     }
@@ -48,15 +47,14 @@ export const RoamingWidget = () => {
   const [level, setLevel] = useState(0);
   const [title, setTitle] = useState('');
   const [need2LevelUp, setNeed2LevelUp] = useState(0);
-  // const [animation, set] = useSpring(() => { opacity: 1 });
 
   const [roamCount, setRoamCount] = useLocalStorageState<number>('roamcount', 0);
-
-  const [total, setTotal] = useLocalStorageState<number>('remstotal', 0);
 
   const [roamedSet, setRoamedSet] = useLocalStorageState<Set<string>>('roaming', new Set());
 
   const [blockSet, setBlockSet] = useLocalStorageState<Set<string>>('block', new Set());
+
+  const [allRems, setAllRems] = useLocalStorageState<string[]>('allrems', []);
 
   useAPIEventListener(AppEvents.setDarkMode, undefined, async (data) => {
     setDark(data.darkMode);
@@ -153,7 +151,6 @@ export const RoamingWidget = () => {
   function reset() {
     setDialogHidden(true);
     setRoamCount(0);
-    setTotal(0);
     setCurrentRemId('');
     setLevel(0);
     setTitle('');
@@ -161,18 +158,24 @@ export const RoamingWidget = () => {
     setRoamedSet(new Set());
     setBlockSet(new Set());
     updateLevel();
+    setAllRems([]);
   }
 
   function showConfirm() {
     setDialogHidden(false);
   }
 
-  async function roaming() {
-    const allRems = await plugin.rem.getAll();
-    setTotal(allRems.length);
+  async function getAllRems() {
+    const tempRems = await plugin.rem.getAll();
+    setAllRems(Re.map(tempRems, x=>x._id));
+  }
 
-    const check = async (x: Rem) => [
-      x === undefined,
+  async function roaming() {
+    if (allRems.length == 0) {
+      getAllRems();
+    }
+
+    const check = async (x: Rem | undefined) => x === undefined ? [true]: [
       blockSet.has(x._id),
       await x.isPowerupEnum(),
       await x.isPowerupProperty(),
@@ -197,29 +200,35 @@ export const RoamingWidget = () => {
 
     const drawaCard = async () => {
       var max = 50;
-      var rem = getRandomElement(allRems);
+      var haveto = undefined;
       while (max > 0) {
+        var remid = getRandomElement(allRems);
+        const rem = await plugin.rem.findOne(remid);
         console.log(`max: ${max}`);
         const checklist = await check(rem);
         console.log(checklist);
         if (checklist.every((x) => x == false)) {
           return rem;
         }
-        setBlockSet(blockSet.add(rem._id));
-        rem = getRandomElement(allRems);
+        if (rem) {
+          setBlockSet(blockSet.add(rem._id));
+          haveto = rem;
+        }
+        
         max -= 1;
       }
-      console.log('rem not found!');
-      return rem;
+      return haveto;
     };
 
-    const got: Rem = await drawaCard();
+    const got: Rem | undefined = await drawaCard();
     if (got) {
       await plugin.window.openRem(got);
       setCurrentRemId(got._id);
       setRoamCount(roamCount + 1);
       setRoamedSet(roamedSet.add(got._id));
       updateLevel();
+    } else {
+      console.log('rem not found!');
     }
   }
 
@@ -235,6 +244,26 @@ export const RoamingWidget = () => {
     from: { blockX: 0 },
     blockX: blockBtnState ? 1 : 0,
     config: { duration: 1000 },
+  });
+
+  const [allBtnState, toggleAll] = useState(true);
+  const { allX } = useSpring({
+    from: { allX: 0 },
+    allX: allBtnState ? 1 : 0,
+    config: { duration: 1000 },
+  });
+
+  const [loadState, toggleLoad] = useState(false);
+  const loadStyles = useSpring({
+    from: {
+      transform: 'rotateZ(0deg)',
+      opacity: 0
+    },
+    to: {
+      transform: 'rotateZ(360deg)',
+      opacity: loadState ? 1 : 0
+    },
+    loop: true,
   });
 
   const [levelupNow, setLevelupnow] = useState(false);
@@ -265,7 +294,7 @@ export const RoamingWidget = () => {
       </animated.div>
 
       <div className="flex justify-between">
-        <div className="flex-none">
+        <div className="flex">
           <button onClick={showConfirm}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -316,17 +345,52 @@ export const RoamingWidget = () => {
           </p>
           <p
             className={clsx(
-              'font-sans text-xs self-center text-cyan-700',
-              dark && 'dark:text-cyan-300'
+              'font-sans text-xs self-center text-green-700',
+              dark && 'dark:text-green-200'
             )}
           >
-            T:{total}
+            <MysteriousText
+              open={loadState}
+              className={clsx(
+                'font-sans text-xs self-center text-cyan-700',
+                dark && 'dark:text-cyan-300'
+              )}
+            >
+              {`T:${allRems.length}`}
+            </MysteriousText>
           </p>
+            
         </div>
-        <div className="w-8"></div>
+        <div className="flex">
+          <animated.div className="self-center" style={loadStyles}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+              <path fillRule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z" clipRule="evenodd" />
+            </svg>
+          </animated.div>
+          <button onClick={async () => {
+            toggleAll(!allBtnState);
+            toggleLoad(true);
+            await getAllRems();
+            toggleLoad(false);
+          }}>
+            <animated.div
+              className="p-2"
+              style={{
+                scale: allX.to({
+                  range: [0, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 1],
+                  output: [1, 0.97, 0.9, 1.1, 0.9, 1.1, 1.03, 1],
+                }),
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                <path fillRule="evenodd" d="M10 1c3.866 0 7 1.79 7 4s-3.134 4-7 4-7-1.79-7-4 3.134-4 7-4zm5.694 8.13c.464-.264.91-.583 1.306-.952V10c0 2.21-3.134 4-7 4s-7-1.79-7-4V8.178c.396.37.842.688 1.306.953C5.838 10.006 7.854 10.5 10 10.5s4.162-.494 5.694-1.37zM3 13.179V15c0 2.21 3.134 4 7 4s7-1.79 7-4v-1.822c-.396.37-.842.688-1.306.953-1.532.875-3.548 1.369-5.694 1.369s-4.162-.494-5.694-1.37A7.009 7.009 0 013 13.179z" clipRule="evenodd" />
+              </svg>
+            </animated.div>
+          </button>
+        </div>
       </div>
       <div className="flex justify-center self-center">
-        <AnimatedNumbers value={roamCount} fontSize={60} dark={dark} />
+        <SAnimatedNumbers value={roamCount} fontSize={60} dark={dark} />
       </div>
       <div className="flex justify-around items-center">
         <button
@@ -350,6 +414,7 @@ export const RoamingWidget = () => {
         <div className="basis-1/2 flex flex-col items-center self-center justify-center">
           <p className={clsx('font-mono text-1xl text-indigo-700', dark && 'dark:text-indigo-300')}>
             <MysteriousText
+              check={true}
               open={levelupNow}
               className={clsx('font-mono text-1xl text-indigo-700', dark && 'dark:text-indigo-300')}
             >

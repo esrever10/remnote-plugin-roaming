@@ -8,7 +8,7 @@ const separators = [",", "."];
 /**
  * Renders an animated JS locale formatted number string
  */
-export function AnimatedNumbers(props: { value: any; fontSize: number; dark: any; }) {
+export function SAnimatedNumbers(props: { value: any; fontSize: number; dark: any; }) {
   const valueStr = (Number(props.value) || Number(0)).toString();
   const valueStrArray = valueStr.split("");
 
