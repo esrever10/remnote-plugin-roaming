@@ -8,12 +8,12 @@
   "version": {
     "major": 0,
     "minor": 1,
-    "patch": 2
+    "patch": 3
   },
   "minimumRemNoteVersion": {
     "major": 0,
     "minor": 1,
-    "patch": 2
+    "patch": 3
   },
   "description": "One click to get a random rem. Gamification experience. Roam freely in your rems.",
   "requestNative": false,

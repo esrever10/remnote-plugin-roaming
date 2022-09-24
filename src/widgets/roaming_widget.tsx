@@ -233,6 +233,7 @@ export const RoamingWidget = () => {
       setRoamedSet([...new Set(roamedSet)]);
       updateLevel();
     } else {
+      getAllRems();
       console.log('rem not found!');
     }
   }
