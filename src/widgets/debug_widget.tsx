@@ -5,6 +5,7 @@ import {
   renderWidget,
   RichTextInterface,
   useAPIEventListener,
+  useOnMessageBroadcast,
   usePlugin,
 } from "@remnote/plugin-sdk";
 import * as Re from "remeda"
@@ -31,8 +32,14 @@ function richText2log(text: RichTextInterface) {
 
 function DebugWidget() {
   const [remId, setRemId] = useState<string>("");
+  const [logs, setLogs] = useState<string[]>([]);
   const [info, setInfo] = useState<Map<string, any>>(new Map());
   const plugin = usePlugin();
+
+  useOnMessageBroadcast("log", (message) => {
+    logs.push(message);
+    setLogs(logs);
+  })
 
   useAPIEventListener(AppEvents.FocusedRemChange, undefined, async (args) => {
     console.log(args);
@@ -63,7 +70,7 @@ function DebugWidget() {
   })
 
   return (
-    <div>
+    <div className="flex flex-col">
         <RemViewer remId={remId} width='50%'></RemViewer>
         {info ? 
             <ul>
@@ -74,6 +81,11 @@ function DebugWidget() {
                 )}
             </ul>
         :""}
+        <div>
+          <ul>
+            {logs.map((x, i) => <li key={i}>{x}</li>)}
+          </ul>
+        </div>
         
     </div>
   );

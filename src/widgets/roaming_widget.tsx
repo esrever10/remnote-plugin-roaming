@@ -50,9 +50,9 @@ export const RoamingWidget = () => {
 
   const [roamCount, setRoamCount] = useLocalStorageState<number>('roamcount', 0);
 
-  const [roamedSet, setRoamedSet] = useLocalStorageState<Set<string>>('roaming', new Set());
+  const [roamedSet, setRoamedSet] = useLocalStorageState<string[]>('roamingset', []);
 
-  const [blockSet, setBlockSet] = useLocalStorageState<Set<string>>('block', new Set());
+  const [blockSet, setBlockSet] = useLocalStorageState<string[]>('blockset', []);
 
   const [allRems, setAllRems] = useLocalStorageState<string[]>('allrems', []);
 
@@ -139,7 +139,8 @@ export const RoamingWidget = () => {
 
   function block() {
     if (currentRemId !== '') {
-      setBlockSet(blockSet.add(currentRemId));
+      blockSet.push(currentRemId);
+      setBlockSet([...new Set(blockSet)]);
     }
     roaming();
   }
@@ -155,8 +156,8 @@ export const RoamingWidget = () => {
     setLevel(0);
     setTitle('');
     setNeed2LevelUp(0);
-    setRoamedSet(new Set());
-    setBlockSet(new Set());
+    setRoamedSet([]);
+    setBlockSet([]);
     updateLevel();
     setAllRems([]);
   }
@@ -171,12 +172,14 @@ export const RoamingWidget = () => {
   }
 
   async function roaming() {
+    // plugin.messaging.broadcast("log", "1223");
+
     if (allRems.length == 0) {
       getAllRems();
     }
 
     const check = async (x: Rem | undefined) => x === undefined ? [true]: [
-      blockSet.has(x._id),
+      blockSet.includes(x._id),
       await x.isPowerupEnum(),
       await x.isPowerupProperty(),
       await x.isPowerup(),
@@ -211,7 +214,8 @@ export const RoamingWidget = () => {
           return rem;
         }
         if (rem) {
-          setBlockSet(blockSet.add(rem._id));
+          blockSet.push(rem._id);
+          setBlockSet([...new Set(blockSet)]);
           haveto = rem;
         }
         
@@ -225,7 +229,8 @@ export const RoamingWidget = () => {
       await plugin.window.openRem(got);
       setCurrentRemId(got._id);
       setRoamCount(roamCount + 1);
-      setRoamedSet(roamedSet.add(got._id));
+      roamedSet.push(got._id);
+      setRoamedSet([...new Set(roamedSet)]);
       updateLevel();
     } else {
       console.log('rem not found!');
@@ -317,7 +322,7 @@ export const RoamingWidget = () => {
               dark && 'dark:text-red-300'
             )}
           >
-            B:{blockSet.size}
+            B:{blockSet.length}
           </p>
           <p
             className={clsx(
@@ -341,7 +346,7 @@ export const RoamingWidget = () => {
               dark && 'dark:text-green-200'
             )}
           >
-            R:{roamedSet.size}
+            R:{roamedSet.length}
           </p>
           <p
             className={clsx(
