@@ -306,7 +306,7 @@ export const RoamingWidget = () => {
 
   if (isSimpleView) {
     return (
-      <div className="flex flex-col">
+      <div className="flex">
         <button
           onClick={() => {
             toggleRoam(!roamBtnState);
