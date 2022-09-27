@@ -52,6 +52,12 @@ async function onActivate(plugin: ReactRNPlugin) {
     defaultValue: "ctrl+alt+.",
   });
 
+  await plugin.settings.registerBooleanSetting({
+    id: "roaming_mode",
+    title: "Simplified plug-in view",
+    defaultValue: false,
+  });
+
   plugin.event.addListener(
     AppEvents.SettingChanged,
     "roaming_shortcut",
