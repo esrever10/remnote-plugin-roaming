@@ -306,52 +306,43 @@ export const RoamingWidget = () => {
 
   if (isSimpleView) {
     return (
-      <div
-        className={clsx(
-          'rounded-md grid grid-flow-row auto-rows-auto h-800 border-double border-indigo-400',
-          dark && 'dark:border-indigo-300'
-        )}
-      >
-        <div className="flex justify-around items-center">
-          <button
-            onClick={() => {
-              toggleBlock(!blockBtnState);
-              block();
+      <div className="flex flex-col">
+        <button
+          onClick={() => {
+            toggleRoam(!roamBtnState);
+            roaming();
+          }}
+        >
+          <animated.div
+            className="p-1 m-1 border-dashed rounded-md"
+            style={{
+              scale: roamX.to({
+                range: [0, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 1],
+                output: [1, 0.97, 0.9, 1.1, 0.9, 1.1, 1.03, 1],
+              }),
             }}
           >
-            <animated.div
-              className="p-2 m-2 border-dashed rounded-md"
-              style={{
-                scale: blockX.to({
-                  range: [0, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 1],
-                  output: [1, 0.97, 0.9, 1.1, 0.9, 1.1, 1.03, 1],
-                }),
-              }}
-            >
-              Block
-            </animated.div>
-          </button>
-          <div>
-            <button
-              onClick={() => {
-                toggleRoam(!roamBtnState);
-                roaming();
-              }}
-            >
-              <animated.div
-                className="p-2 m-2 border-dashed rounded-md"
-                style={{
-                  scale: roamX.to({
-                    range: [0, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 1],
-                    output: [1, 0.97, 0.9, 1.1, 0.9, 1.1, 1.03, 1],
-                  }),
-                }}
-              >
-                Roam
-              </animated.div>
-            </button>
-          </div>
-        </div>
+            R
+          </animated.div>
+        </button>
+        <button
+          onClick={() => {
+            toggleBlock(!blockBtnState);
+            block();
+          }}
+        >
+          <animated.div
+            className="p-1 m-1 border-dashed rounded-md"
+            style={{
+              scale: blockX.to({
+                range: [0, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 1],
+                output: [1, 0.97, 0.9, 1.1, 0.9, 1.1, 1.03, 1],
+              }),
+            }}
+          >
+            B
+          </animated.div>
+        </button>
       </div>
     );
   } else {
