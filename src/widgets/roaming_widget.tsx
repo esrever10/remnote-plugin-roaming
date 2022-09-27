@@ -6,6 +6,7 @@ import {
   useLocalStorageState,
   AppEvents,
   useAPIEventListener,
+  useOnMessageBroadcast,
 } from '@remnote/plugin-sdk';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
@@ -17,29 +18,39 @@ import ConfirmDialog from './confirm_dialog';
 const getRandomElement = (arr: any[]) =>
   arr.length ? arr[Math.floor(Math.random() * arr.length)] : undefined;
 
-const MysteriousText = ({ children, ...props }) => {
-  const [animations, api] = useSprings(children.length, (i) => ({
+interface MysteriousProps {
+  open: boolean,
+  check: boolean,
+  className: string,
+  children: string
+}
+
+const MysteriousText = (props: React.PropsWithChildren<MysteriousProps>) => {
+  const [animations, api] = useSprings(props.children.length, (i) => ({
     opacity: 1,
     delay: Math.random() * 350,
   }));
-  const content = useRef(children);
+  const content = useRef(props.children);
 
   useEffect(() => {
-    if ((props.open && !props.check) || (content.current !== children)) {
+    if ((props.open && !props.check) || (content.current !== props.children)) {
       api((i) => ({ opacity: 1, from: { opacity: 0 }, delay: Math.random() * 350 }));
-      content.current = children;
+      content.current = props.children;
     }
   });
 
-  return children.split('').map((item: string, index: number) => (
-    <animated.span key={index} style={animations[index]} {...props}>
-      {item}
-    </animated.span>
-  ));
+  return (<>
+    {props.children.split('').map((item: string, index: number) => (
+      <animated.span key={index} style={animations[index]} {...props}>
+        {item}
+      </animated.span>
+    ))}
+  </>);
 };
 
+
 export const RoamingWidget = () => {
-  console.log(document.body.classList.contains('dark'));
+  // console.log(document.body.classList.contains('dark'));
   const plugin = usePlugin();
   const [dialogHidden, setDialogHidden] = useState<boolean>(true);
   const [dark, setDark] = useState(false);
@@ -55,6 +66,13 @@ export const RoamingWidget = () => {
   const [blockSet, setBlockSet] = useLocalStorageState<string[]>('blockset', []);
 
   const [allRems, setAllRems] = useLocalStorageState<string[]>('allrems', []);
+
+
+  
+
+  useOnMessageBroadcast(undefined, (message) => {
+    roaming();
+  })
 
   useAPIEventListener(AppEvents.setDarkMode, undefined, async (data) => {
     setDark(data.darkMode);
@@ -158,24 +176,24 @@ export const RoamingWidget = () => {
     setNeed2LevelUp(0);
     setRoamedSet([]);
     setBlockSet([]);
-    updateLevel();
     setAllRems([]);
+    updateLevel();
   }
 
   function showConfirm() {
     setDialogHidden(false);
   }
 
-  async function getAllRems() {
+  async function updateAllRems() {
     const tempRems = await plugin.rem.getAll();
-    setAllRems(Re.map(tempRems, x=>x._id));
+    const newAllRems = Re.map(tempRems, x=>x._id);
+    await setAllRems(newAllRems);
   }
 
   async function roaming() {
-    // plugin.messaging.broadcast("log", "1223");
 
     if (allRems.length == 0) {
-      getAllRems();
+      await updateAllRems();
     }
 
     const check = async (x: Rem | undefined) => x === undefined ? [true]: [
@@ -218,7 +236,6 @@ export const RoamingWidget = () => {
           setBlockSet([...new Set(blockSet)]);
           haveto = rem;
         }
-        
         max -= 1;
       }
       return haveto;
@@ -233,7 +250,7 @@ export const RoamingWidget = () => {
       setRoamedSet([...new Set(roamedSet)]);
       updateLevel();
     } else {
-      getAllRems();
+      updateAllRems();
       console.log('rem not found!');
     }
   }
@@ -357,6 +374,7 @@ export const RoamingWidget = () => {
           >
             <MysteriousText
               open={loadState}
+              check={false}
               className={clsx(
                 'font-sans text-xs self-center text-cyan-700',
                 dark && 'dark:text-cyan-300'
@@ -376,7 +394,7 @@ export const RoamingWidget = () => {
           <button onClick={async () => {
             toggleAll(!allBtnState);
             toggleLoad(true);
-            await getAllRems();
+            await updateAllRems();
             toggleLoad(false);
           }}>
             <animated.div
